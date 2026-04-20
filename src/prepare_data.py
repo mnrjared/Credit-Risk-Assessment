@@ -7,7 +7,7 @@ import os
 data_path = 'data/credit_risk_dataset.csv'
 
 if not os.path.exists(data_path):
-    print(f"❌ ERROR: Could not find {data_path}. Ensure you are in the root directory.")
+    print(f"ERROR: Could not find {data_path}. Ensure you are in the root directory.")
 else:
     df = pd.read_csv(data_path)
     print("✅ Raw data loaded successfully.")
@@ -28,7 +28,7 @@ else:
         upper = Q3 + 1.5 * IQR
         df[column] = df[column].clip(lower, upper)
     
-    print(f"✅ Outlier clipping complete for {len(num_features)} feature columns.")
+    print(f"Outlier clipping complete for {len(num_features)} feature columns.")
 
     # 4. Stratified Split (Mandatory for imbalanced data)
     # This preserves the ~22% default rate in both the training and testing files
@@ -44,7 +44,7 @@ else:
     train_df.to_csv("data/train.csv", index=False)
     test_df.to_csv("data/test.csv", index=False)
 
-    print("\n✅ train.csv and test.csv generated successfully in the /data folder!")
+    print("\ntrain.csv and test.csv generated successfully in the /data folder!")
     
     # 6. Final Sanity Check for P2 Modeling
     # This should now show both 0s and 1s
