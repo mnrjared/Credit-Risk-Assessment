@@ -51,9 +51,9 @@ app.layout = html.Div(style={
                 ]),
                 dcc.Tab(label='Model Evaluation (Artifacts)', style={'backgroundColor': '#1a1d23'}, children=[
                     html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', 'padding': '20px'}, children=[
-                        # Images must be in the /assets folder to show up like this
-                        html.Div([html.P("Confusion Matrix"), html.Img(src='/assets/confusion_matrix.png', width='90%')], style={'width': '45%'}),
-                        html.Div([html.P("ROC Curve"), html.Img(src='/assets/roc_curve.png', width='90%')], style={'width': '45%'})
+                        # Images must be in the /artifacts folder to show up like this
+                        html.Div([html.P("Confusion Matrix"), html.Img(src='../artifscts/confusion_matrix.png', width='90%')], style={'width': '45%'}),
+                        html.Div([html.P("ROC Curve"), html.Img(src='../artifacts/roc_curve.png', width='90%')], style={'width': '45%'})
                     ])
                 ])
             ])
@@ -71,7 +71,7 @@ app.layout = html.Div(style={
 def process_assessment(n_clicks, income, loan, score):
     # Load Feature Importance from P2
     try:
-        df_imp = pd.read_csv('artifacts/feature_importance.csv')
+        df_imp = pd.read_csv('../artifacts/feature_importance.csv')
         fig = px.bar(df_imp, x='importance', y='feature', orientation='h', template='plotly_dark')
         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
     except:
