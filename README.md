@@ -44,13 +44,13 @@ A machine learning web application that assesses credit risk for loan applicants
 
 ## Models
 
-**Model 1 — Voting Classifier (primary)**
+**Model 1 - Voting Classifier (primary)**
 A soft-voting ensemble of three gradient boosting models:
 - Gradient Boosting Classifier
 - XGBoost
 - LightGBM
 
-**Model 2 — Random Forest (backup)**
+**Model 2 - Random Forest (backup)**
 Used alongside Model 1 to produce a consensus-based risk verdict.
 
 Risk is determined by comparing both model outputs:
