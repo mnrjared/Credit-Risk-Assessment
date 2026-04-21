@@ -12,7 +12,8 @@ server = app.server
 # This special route allows the browser to see the images in /artifacts
 @server.route('/artifacts/<path:path>')
 def serve_artifacts(path):
-    root_dir = os.path.dirname(os.getcwd()) # Goes up from /src to project root
+    # Use __file__ to get the project root regardless of where app is run from
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     artifacts_path = os.path.join(root_dir, 'artifacts')
     return flask.send_from_directory(artifacts_path, path)
 
@@ -83,9 +84,10 @@ app.layout = html.Div(style={
     [State('income', 'value'), State('loan', 'value'), State('score', 'value')]
 )
 def update_app(n_clicks, income, loan, score):
-    # Path logic: Go up from /src to find /artifacts/feature_importance.csv 
+    # Path logic: Use __file__ to find /artifacts/feature_importance.csv 
     try:
-        path = os.path.join(os.path.dirname(os.getcwd()), 'artifacts', 'feature_importance.csv')
+        root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        path = os.path.join(root_dir, 'artifacts', 'feature_importance.csv')
         df_imp = pd.read_csv(path)
         fig = px.bar(df_imp, x='importance', y='feature', orientation='h', template='plotly_dark')
         fig.update_traces(marker_color='#00d4ff')
