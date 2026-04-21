@@ -145,6 +145,6 @@ def update_app(n_clicks, person_age, person_income, person_emp_length, loan_amnt
             
     except Exception as e:
         return html.P(f"Feature Error: {str(e)}", style={'color': 'yellow'})
-
+server = app.server  # ← this is what gunicorn binds to
 if __name__ == '__main__':
     app.run(debug=False)
