@@ -4,3 +4,5 @@ plotly
 gunicorn
 scikit-learn
 joblib
+xgboost
+lightgbm
