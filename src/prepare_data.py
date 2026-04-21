@@ -12,10 +12,17 @@ else:
     df = pd.read_csv(data_path)
     print("✅ Raw data loaded successfully.")
 
-    # 2. Check for missing values
+    # 2. Remove duplicates BEFORE any processing
+    duplicates = df.duplicated().sum()
+    if duplicates > 0:
+        print(f"Removing {duplicates} duplicate rows...")
+        df = df.drop_duplicates()
+        df = df.reset_index(drop=True)
+
+    # 3. Check for missing values
     print("\nMissing values per column:\n", df.isnull().sum())
 
-    # 3. Outlier Handling (Clipping) - EXCLUDING THE TARGET
+    # 4. Outlier Handling (Clipping) - EXCLUDING THE TARGET
     # We only want to clip actual feature values, not our 0/1 target labels
     num_features = [col for col in df.select_dtypes(include=['int64', 'float64']).columns 
                     if col != 'loan_status']
@@ -30,7 +37,7 @@ else:
     
     print(f"Outlier clipping complete for {len(num_features)} feature columns.")
 
-    # 4. Stratified Split (Mandatory for imbalanced data)
+    # 5. Stratified Split (Mandatory for imbalanced data)
     # This preserves the ~22% default rate in both the training and testing files
     train_df, test_df = train_test_split(
         df, 
@@ -39,21 +46,15 @@ else:
         random_state=42
     )
 
-    # 5. Save files into the local data folder (Root-relative paths)
+    # 6. Save files into the local data folder (Root-relative paths)
     os.makedirs('data', exist_ok=True)
     train_df.to_csv("data/train.csv", index=False)
     test_df.to_csv("data/test.csv", index=False)
 
     print("\ntrain.csv and test.csv generated successfully in the /data folder!")
     
-    # 6. Final Sanity Check for P2 Modeling
+    # 7. Final Sanity Check for P2 Modeling
     # This should now show both 0s and 1s
     print("\n--- Distribution Check in Training Data ---")
     print(train_df["loan_status"].value_counts())
     
-    df = pd.read_csv("credit_risk_dataset.csv")
-    df.duplicated().sum()
-    df[df.duplicated()]
-    df = df.drop_duplicates()
-    df = df.reset_index(drop = True)
-    df.to_csv("cleaned_credit_risk_dataset.csv", index = False)
