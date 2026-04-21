@@ -50,3 +50,10 @@ else:
     # This should now show both 0s and 1s
     print("\n--- Distribution Check in Training Data ---")
     print(train_df["loan_status"].value_counts())
+    
+    df = pd.read_csv("credit_risk_dataset.csv")
+    df.duplicated().sum()
+    df[df.duplicated()]
+    df = df.drop_duplicates()
+    df = df.reset_index(drop = True)
+    df.to_csv("cleaned_credit_risk_dataset.csv", index = False)
