@@ -2,58 +2,54 @@ import dash
 from dash import dcc, html, Input, Output, State
 import pandas as pd
 import plotly.express as px
+import flask
 import os
 
-# 1. INITIALIZE
+# Initialize
 app = dash.Dash(__name__)
 server = app.server
 
-# 2. LOAD DATASET FOR ANALYSIS
-# We use the dataset to show the user where they sit compared to the data
-try:
-    df_full = pd.read_csv('data/credit_risk_dataset.csv')
-    avg_income = df_full['person_income'].mean()
-except Exception as e:
-    print(f"Error loading dataset: {e}")
-    avg_income = 50000
+# FIX: This allows Dash to "see" the artifacts folder
+@server.route('/artifacts/<path:path>')
+def serve_artifacts(path):
+    # This assumes artifacts is one level up from the src folder
+    root_dir = os.path.dirname(os.getcwd())
+    artifacts_path = os.path.join(root_dir, 'artifacts')
+    return flask.send_from_directory(artifacts_path, path)
 
-# 3. LAYOUT
 app.layout = html.Div(style={
     'backgroundColor': '#0f1115', 'color': '#f0f0f0', 'padding': '20px', 'fontFamily': 'Arial'
 }, children=[
     html.H1("Credit Risk Intelligence System", style={'textAlign': 'center', 'color': '#00d4ff'}),
     
     html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'gap': '20px'}, children=[
-        # Input Section
+        # Left Side: Inputs
         html.Div(style={
             'flex': '1', 'minWidth': '300px', 'backgroundColor': '#1a1d23', 'padding': '20px', 'borderRadius': '10px'
         }, children=[
-            html.H3("Applicant Details"),
+            html.H3("Applicant Details", style={'color': '#FFD700'}),
             html.Label("Annual Income (R):"),
-            dcc.Input(id='income', type='number', value=avg_income, style={'width': '100%', 'marginBottom': '10px'}),
-            
+            dcc.Input(id='income', type='number', placeholder='e.g. 50000', style={'width': '100%', 'marginBottom': '10px'}),
             html.Label("Loan Amount (R):"),
-            dcc.Input(id='loan', type='number', placeholder='e.g. 50000', style={'width': '100%', 'marginBottom': '10px'}),
-            
+            dcc.Input(id='loan', type='number', placeholder='e.g. 10000', style={'width': '100%', 'marginBottom': '10px'}),
             html.Label("Credit Score:"),
             dcc.Input(id='score', type='number', placeholder='e.g. 600', style={'width': '100%', 'marginBottom': '20px'}),
-            
             html.Button('RUN ASSESSMENT', id='predict-btn', n_clicks=0, 
-                        style={'width': '100%', 'padding': '10px', 'backgroundColor': '#00d4ff', 'border': 'none', 'fontWeight': 'bold'})
+                        style={'width': '100%', 'padding': '10px', 'backgroundColor': '#FFD700', 'border': 'none', 'fontWeight': 'bold', 'color': '#121212'})
         ]),
 
-        # Results and Artifacts Section
+        # Right Side: Results
         html.Div(style={'flex': '2', 'minWidth': '500px'}, children=[
             dcc.Tabs(id="tabs", children=[
-                dcc.Tab(label='Risk Prediction', style={'backgroundColor': '#1a1d23'}, children=[
+                dcc.Tab(label='Risk Prediction', children=[
                     html.Div(id='prediction-output', style={'padding': '20px', 'textAlign': 'center'}),
                     dcc.Graph(id='importance-graph')
                 ]),
-                dcc.Tab(label='Model Evaluation (Artifacts)', style={'backgroundColor': '#1a1d23'}, children=[
+                dcc.Tab(label='Model Evaluation (Artifacts)', children=[
                     html.Div(style={'display': 'flex', 'flexWrap': 'wrap', 'justifyContent': 'center', 'padding': '20px'}, children=[
-                        # Images must be in the /artifacts folder to show up like this
-                        html.Div([html.P("Confusion Matrix"), html.Img(src='../artifscts/confusion_matrix.png', width='90%')], style={'width': '45%'}),
-                        html.Div([html.P("ROC Curve"), html.Img(src='../artifacts/roc_curve.png', width='90%')], style={'width': '45%'})
+                        # We use the new /artifacts/ route here
+                        html.Div([html.P("Confusion Matrix"), html.Img(src='/artifacts/confusion_matrix.png', width='100%')], style={'width': '45%', 'padding': '10px'}),
+                        html.Div([html.P("ROC Curve"), html.Img(src='/artifacts/roc_curve.png', width='100%')], style={'width': '45%', 'padding': '10px'})
                     ])
                 ])
             ])
@@ -61,36 +57,32 @@ app.layout = html.Div(style={
     ])
 ])
 
-# 4. CALLBACK
 @app.callback(
     [Output('prediction-output', 'children'),
      Output('importance-graph', 'figure')],
     Input('predict-btn', 'n_clicks'),
     [State('income', 'value'), State('loan', 'value'), State('score', 'value')]
 )
-def process_assessment(n_clicks, income, loan, score):
-    # Load Feature Importance from P2
+def update_app(n_clicks, income, loan, score):
+    # Adjust path because web_app.py is inside /src
     try:
-        df_imp = pd.read_csv('../artifacts/feature_importance.csv')
+        # Go up one level from /src to find /artifacts
+        path = os.path.join(os.path.dirname(os.getcwd()), 'artifacts', 'feature_importance.csv')
+        df_imp = pd.read_csv(path)
         fig = px.bar(df_imp, x='importance', y='feature', orientation='h', template='plotly_dark')
+        fig.update_traces(marker_color='#FFD700') # Keep the yellow/gold theme
         fig.update_layout(paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)')
     except:
-        fig = px.bar(title="Loading Feature Data...")
+        fig = px.bar(title="Artifact CSV not found in /artifacts folder", template='plotly_dark')
 
     if n_clicks == 0:
-        return "Enter data and click Assess", fig
+        return "", fig
 
-    # Logic using Dataset Averages
-    # Simple risk logic for demonstration
+    # Assessment Logic
     if score and score < 580:
-        res = "Risk Level: HIGH"
-        color = "red"
-    elif income and loan and (loan > income * 0.5):
-        res = "Risk Level: MODERATE (Loan exceeds 50% of Income)"
-        color = "orange"
+        res, color = "Risk Level: HIGH", "#FF4C4C"
     else:
-        res = "Risk Level: LOW (Likely Approved)"
-        color = "green"
+        res, color = "Risk Level: LOW", "#00FF7F"
 
     return html.H2(res, style={'color': color}), fig
 
