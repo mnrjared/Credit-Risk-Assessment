@@ -4,6 +4,11 @@ from sklearn.model_selection import train_test_split
 print(df.isnull().sum())
 
 df = pd.read_csv("credit_risk_dataset.csv")
+df.duplicated().sum()
+df[df.duplicated()]
+df = df.drop_duplicates()
+df = df.reset_index(drop = True)
+df.to_csv("cleaned_credit_risk_dataset.csv", index = False)
 
 num = df.select_dtypes(include = ['int64', 'float64']).columns
 
