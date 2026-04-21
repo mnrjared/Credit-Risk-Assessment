@@ -68,10 +68,24 @@ app.layout = html.Div(style={
             html.H3("Applicant Input", style={'fontSize': '18px', 'marginBottom': '20px'}),
             
             html.Div(style={'display': 'grid', 'gridTemplateColumns': '1fr 1fr', 'gap': '15px'}, children=[
-                html.Div([html.Label("Annual Income (R)"), dcc.Input(id='income', type='number', className='custom-input', value=0)]),
-                html.Div([html.Label("Loan Amount (R)"), dcc.Input(id='loan', type='number', className='custom-input', value=0)]),
-                html.Div([html.Label("Credit Score"), dcc.Input(id='score', type='number', className='custom-input', value=0)]),
-                html.Div([html.Label("Employment Length (Years)"), dcc.Input(id='emp', type='number', className='custom-input', value=0)]),
+                html.Div([html.Label("Age"), dcc.Input(id='person_age', type='number', className='custom-input', value=30)]),
+                html.Div([html.Label("Annual Income (R)"), dcc.Input(id='person_income', type='number', className='custom-input', value=50000)]),
+                html.Div([html.Label("Employment Length (Years)"), dcc.Input(id='person_emp_length', type='number', className='custom-input', value=5)]),
+                html.Div([html.Label("Loan Amount (R)"), dcc.Input(id='loan_amnt', type='number', className='custom-input', value=10000)]),
+                html.Div([html.Label("Interest Rate (%)"), dcc.Input(id='loan_int_rate', type='number', className='custom-input', value=10.0)]),
+                html.Div([html.Label("Loan-to-Income Ratio"), dcc.Input(id='loan_percent_income', type='number', className='custom-input', value=0.2)]),
+                html.Div([html.Label("Credit History (Years)"), dcc.Input(id='cb_person_cred_hist_length', type='number', className='custom-input', value=5)]),
+                html.Div([html.Label("Loan Grade"), dcc.Dropdown(id='loan_grade', className='custom-input', value='B',
+                    options=[{'label': 'A', 'value': 'A'}, {'label': 'B', 'value': 'B'}, {'label': 'C', 'value': 'C'},
+                             {'label': 'D', 'value': 'D'}, {'label': 'E', 'value': 'E'}, {'label': 'F', 'value': 'F'}, {'label': 'G', 'value': 'G'}])]),
+                html.Div([html.Label("Home Ownership"), dcc.Dropdown(id='person_home_ownership', className='custom-input', value='RENT',
+                    options=[{'label': 'Rent', 'value': 'RENT'}, {'label': 'Own', 'value': 'OWN'}, {'label': 'Mortgage', 'value': 'MORTGAGE'}, {'label': 'Other', 'value': 'OTHER'}])]),
+                html.Div([html.Label("Loan Intent"), dcc.Dropdown(id='loan_intent', className='custom-input', value='PERSONAL',
+                    options=[{'label': 'Personal', 'value': 'PERSONAL'}, {'label': 'Education', 'value': 'EDUCATION'},
+                             {'label': 'Medical', 'value': 'MEDICAL'}, {'label': 'Venture', 'value': 'VENTURE'},
+                             {'label': 'Home Improvement', 'value': 'HOMEIMPROVEMENT'}, {'label': 'Debt Consolidation', 'value': 'DEBTCONSOLIDATION'}])]),
+                html.Div([html.Label("Default on File"), dcc.Dropdown(id='cb_person_default_on_file', className='custom-input', value='N',
+                    options=[{'label': 'No', 'value': 'N'}, {'label': 'Yes', 'value': 'Y'}])]),
             ]),
             
             html.Button('Run assessment', id='predict-btn', n_clicks=0, style={
@@ -89,19 +103,28 @@ app.layout = html.Div(style={
 @app.callback(
     Output('prediction-output', 'children'),
     Input('predict-btn', 'n_clicks'),
-    [State('income', 'value'), State('loan', 'value'), State('score', 'value'), State('emp', 'value')]
+    [State('person_age', 'value'), State('person_income', 'value'), State('person_emp_length', 'value'),
+     State('loan_amnt', 'value'), State('loan_int_rate', 'value'), State('loan_percent_income', 'value'),
+     State('cb_person_cred_hist_length', 'value'), State('loan_grade', 'value'),
+     State('person_home_ownership', 'value'), State('loan_intent', 'value'),
+     State('cb_person_default_on_file', 'value')]
 )
-def update_app(n_clicks, income, loan, score, emp):
+def update_app(n_clicks, person_age, person_income, person_emp_length, loan_amnt, loan_int_rate,
+               loan_percent_income, cb_person_cred_hist_length, loan_grade, person_home_ownership,
+               loan_intent, cb_person_default_on_file):
     if n_clicks == 0:
         return ""
 
     if model1 is None or model2 is None:
         return html.H4("Missing one or both .pkl models in /artifacts", style={'color': 'orange'})
 
-    # Prepare input for the model. 
-    # NOTE: The order must match exactly what P2 used to train the model.
-    input_data = pd.DataFrame([[income, loan, score, emp]], 
-                              columns=['income', 'loan', 'score', 'emp'])
+    # Prepare input for the model with all required features
+    input_data = pd.DataFrame([[person_age, person_income, person_emp_length, loan_amnt,
+                                loan_int_rate, loan_percent_income, cb_person_cred_hist_length,
+                                loan_grade, person_home_ownership, loan_intent, cb_person_default_on_file]], 
+                              columns=['person_age', 'person_income', 'person_emp_length', 'loan_amnt',
+                                       'loan_int_rate', 'loan_percent_income', 'cb_person_cred_hist_length',
+                                       'loan_grade', 'person_home_ownership', 'loan_intent', 'cb_person_default_on_file'])
     
     try:
         p1 = model1.predict(input_data)[0]
@@ -124,4 +147,4 @@ def update_app(n_clicks, income, loan, score, emp):
         return html.P(f"Feature Error: {str(e)}", style={'color': 'yellow'})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

@@ -1,0 +1,269 @@
+/* BC Analytics - Credit Risk Assessment Styles */
+
+:root {
+    --bg-dark: #0b0e14;
+    --bg-card: #161b22;
+    --accent-cyan: #00d4ff;
+    --text-primary: #e0e0e0;
+    --text-secondary: #888;
+    --risk-high: #ff4c4c;
+    --risk-low: #00ff7f;
+    --risk-moderate: #ffd700;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+/* Header */
+.header-container {
+    margin-bottom: 30px;
+}
+
+.brand {
+    color: var(--accent-cyan);
+    font-size: 12px;
+    font-weight: bold;
+    margin: 0;
+}
+
+.title {
+    font-size: 28px;
+    margin-top: 0px;
+}
+
+.subtitle {
+    color: var(--text-secondary);
+}
+
+/* Cards */
+.card {
+    background-color: var(--bg-card);
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+}
+
+.card-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+}
+
+/* Layout */
+.main-container {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.left-column {
+    flex: 1;
+    min-width: 450px;
+}
+
+.right-column {
+    flex: 1;
+    min-width: 450px;
+}
+
+/* Images */
+.image-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.image-row img {
+    width: 48%;
+    border-radius: 5px;
+}
+
+.feature-importance-label {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.feature-importance-img {
+    width: 100%;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+/* Form */
+.input-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.input-group label {
+    margin-bottom: 5px;
+    font-size: 14px;
+}
+
+/* Custom Input Styles */
+.custom-input {
+    background-color: #1f2937;
+    border: 1px solid #374151;
+    color: var(--text-primary);
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.custom-input:focus {
+    border-color: var(--accent-cyan);
+    outline: none;
+}
+
+/* Dropdown */
+.Select-control {
+    background-color: #1f2937 !important;
+    border: 1px solid #374151 !important;
+    color: var(--text-primary) !important;
+}
+
+.Select-menu-outer {
+    background-color: #1f2937 !important;
+    border: 1px solid #374151 !important;
+}
+
+.Select-option {
+    color: var(--text-primary) !important;
+}
+
+.Select-option:hover {
+    background-color: #374151 !important;
+}
+
+/* Button */
+.predict-btn {
+    width: 100%;
+    margin-top: 30px;
+    padding: 12px;
+    background-color: var(--accent-cyan);
+    color: var(--bg-dark);
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.2s;
+}
+
+.predict-btn:hover {
+    background-color: #00b8e0;
+}
+
+/* Prediction Output */
+.prediction-output {
+    margin-top: 25px;
+    text-align: center;
+    font-size: 20px;
+}
+
+.risk-label {
+    margin: 0;
+}
+
+.risk-message {
+    color: var(--text-secondary);
+    margin-top: 5px;
+}
+
+/* Probability Display */
+.probability-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #1f2937;
+    border-radius: 8px;
+}
+
+.probability-title {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.probability-bar {
+    height: 20px;
+    background-color: #374151;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.probability-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+}
+
+.probability-values {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Stats Section */
+.stats-section {
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #1f2937;
+    border-radius: 8px;
+}
+
+.stats-title {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-value {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--accent-cyan);
+}
+
+.stat-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* Model Agreement */
+.agreement-section {
+    margin-top: 15px;
+    padding: 10px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.agreement-both {
+    background-color: rgba(0, 255, 127, 0.1);
+    border: 1px solid var(--risk-low);
+}
+
+.agreement-disagree {
+    background-color: rgba(255, 215, 0, 0.1);
+    border: 1px solid var(--risk-moderate);
+}
